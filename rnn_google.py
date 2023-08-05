@@ -23,8 +23,6 @@ df.set_index('Date', inplace=True)
 data = df['Close'].values.reshape(-1, 1)
 data
 
-"""## OR WE CAN USE MULTIPLE FEATURE COLUMN"""
-
 scaler = MinMaxScaler()
 data = scaler.fit_transform(data)
 
@@ -71,5 +69,3 @@ plt.title('Google Stock Price Prediction')
 plt.legend()
 plt.grid(True)
 plt.show()
-
-"""## If we consider all the necessary feature not just Closing price"""
