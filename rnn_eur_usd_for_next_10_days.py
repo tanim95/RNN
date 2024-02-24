@@ -77,49 +77,26 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-# Extract the actual closing prices for the next 10 days
-actual_prices = df['Close'].iloc[-future_days:]
 
-# Combine actual and predicted prices into a single DataFrame
-combined_df = pd.DataFrame(
-    {'Date': next_dates, 'Actual Price': actual_prices.values, 'Predicted Price': y_pred.flatten()})
-
-# Plot the actual and predicted prices
-plt.figure(figsize=(10, 6))
-plt.plot(combined_df['Date'], combined_df['Actual Price'],
-         label='Actual Prices', color='blue', marker='o')
-plt.plot(combined_df['Date'], combined_df['Predicted Price'],
-         label='Predicted Prices', color='red', marker='x')
-plt.xlabel('Date')
-plt.ylabel('Price')
-plt.title('Actual vs. Predicted Closing Prices of EUR/USD for Next 10 Days')
-plt.legend()
-plt.grid(True)
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()
-
-
-# Define the starting date
 start_date = datetime.datetime(2024, 2, 23)
 
-# Generate dates for the next 10 days
+# Generating dates for the next 10 days
 future_dates = [start_date + datetime.timedelta(days=i) for i in range(10)]
 
-# Convert the dates to strings
+# Converting the dates to strings
 next_dates = [date.strftime('%Y-%m-%d') for date in future_dates]
 future_days = len(future_dates)
-# Reshape the data for prediction
+# Reshaping the data for prediction
 X_future = X_test[-future_days:]
 
-# Predict the closing prices for the next 10 days
+# Predicting the closing prices for the next 10 days
 y_pred = model.predict(X_future)
 y_pred = scaler.inverse_transform(y_pred).flatten()
 
-# Create a DataFrame with the predicted closing prices and dates
+# DataFrame with the predicted closing prices and dates
 prediction_df = pd.DataFrame({'Date': next_dates, 'Predicted Price': y_pred})
+print(prediction_df)
 
-# Plot the predicted prices
 plt.figure(figsize=(10, 6))
 plt.plot(prediction_df['Date'], prediction_df['Predicted Price'],
          label='Predicted Prices', color='red', marker='x')
