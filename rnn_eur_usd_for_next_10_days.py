@@ -7,13 +7,14 @@ Original file is located at
     https://colab.research.google.com/drive/1QOnzIs9d3J7BZgbbcP2xjKd-mAtATm7E
 """
 
+import datetime
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
-from keras.layers import Dense , LSTM
+from keras.layers import Dense, LSTM
 
 df = pd.read_csv('EURUSD=X.csv')
 df.tail()
@@ -22,7 +23,7 @@ df.describe()
 
 df.dropna(inplace=True)
 
-plt.figure(figsize=(14, 6),dpi = 100)
+plt.figure(figsize=(14, 6), dpi=100)
 plt.plot(df['Close'], label='Closing Price', color='blue')
 plt.xlabel('Date')
 plt.ylabel('Closing Price')
@@ -54,7 +55,7 @@ X_train, X_test = X[:train_size], X[train_size:]
 y_train, y_test = y[:train_size], y[train_size:]
 
 model = Sequential()
-model.add(LSTM(50, return_sequences=True, input_shape=(sequence_length,1)))
+model.add(LSTM(50, return_sequences=True, input_shape=(sequence_length, 1)))
 model.add(LSTM(50))
 model.add(Dense(1))
 
@@ -64,7 +65,7 @@ model.fit(X_train, y_train, epochs=200, batch_size=32, validation_split=0.2)
 y_pred = model.predict(X_test)
 y_pred = scaler.inverse_transform(y_pred)
 y_test = scaler.inverse_transform(y_test)
-y_pred[:10,:]
+y_pred[:10, :]
 
 plt.figure(figsize=(10, 6))
 plt.plot(y_test, label='Actual Prices', color='blue')
@@ -80,12 +81,15 @@ plt.show()
 actual_prices = df['Close'].iloc[-future_days:]
 
 # Combine actual and predicted prices into a single DataFrame
-combined_df = pd.DataFrame({'Date': next_dates, 'Actual Price': actual_prices.values, 'Predicted Price': y_pred.flatten()})
+combined_df = pd.DataFrame(
+    {'Date': next_dates, 'Actual Price': actual_prices.values, 'Predicted Price': y_pred.flatten()})
 
 # Plot the actual and predicted prices
 plt.figure(figsize=(10, 6))
-plt.plot(combined_df['Date'], combined_df['Actual Price'], label='Actual Prices', color='blue', marker='o')
-plt.plot(combined_df['Date'], combined_df['Predicted Price'], label='Predicted Prices', color='red', marker='x')
+plt.plot(combined_df['Date'], combined_df['Actual Price'],
+         label='Actual Prices', color='blue', marker='o')
+plt.plot(combined_df['Date'], combined_df['Predicted Price'],
+         label='Predicted Prices', color='red', marker='x')
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.title('Actual vs. Predicted Closing Prices of EUR/USD for Next 10 Days')
@@ -95,7 +99,6 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 
-import datetime
 
 # Define the starting date
 start_date = datetime.datetime(2024, 2, 23)
@@ -105,7 +108,7 @@ future_dates = [start_date + datetime.timedelta(days=i) for i in range(10)]
 
 # Convert the dates to strings
 next_dates = [date.strftime('%Y-%m-%d') for date in future_dates]
-
+future_days = len(future_dates)
 # Reshape the data for prediction
 X_future = X_test[-future_days:]
 
@@ -118,7 +121,8 @@ prediction_df = pd.DataFrame({'Date': next_dates, 'Predicted Price': y_pred})
 
 # Plot the predicted prices
 plt.figure(figsize=(10, 6))
-plt.plot(prediction_df['Date'], prediction_df['Predicted Price'], label='Predicted Prices', color='red', marker='x')
+plt.plot(prediction_df['Date'], prediction_df['Predicted Price'],
+         label='Predicted Prices', color='red', marker='x')
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.title('Predicted Closing Prices of EUR/USD for Next 10 Days')
